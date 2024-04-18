@@ -12,7 +12,12 @@
           "package_name": "com.example.dreamsaver"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1082039586801-jgpog63s6qdo51a5prnb5ap1dnb95jql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDim8sebqGKzMD_97N4_X7v_3bwSbejA2I"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082039586801-jgpog63s6qdo51a5prnb5ap1dnb95jql.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1082039586801-erp6entfctaahvptlemsmalfr0u6ms0l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dreamsaver"
+              }
+            }
+          ]
         }
       }
     }

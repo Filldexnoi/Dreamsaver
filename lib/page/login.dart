@@ -1,24 +1,12 @@
+import 'package:dreamsaver/usercontroller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/gestures.dart';
 import 'Signup.dart';
-void main() {
-  runApp(LoginApp());
-}
+import 'home.dart';
 
-class LoginApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Page',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginPage(),
-    );
-  }
-}
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -29,7 +17,8 @@ class _LoginPageState extends State<LoginPage> {
   GoogleSignIn _googleSignIn = GoogleSignIn();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
+  
+  @override
   void _login() {
     String username = _usernameController.text;
     String password = _passwordController.text;
@@ -44,6 +33,8 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => SignUpPage()),
     );
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +121,27 @@ class _LoginPageState extends State<LoginPage> {
                       Size.fromWidth(75),
                     ),
                   ),
-                  onPressed: _login,
+                  onPressed: () async {
+                    try {
+                      final user = await UserController.loginWithGoogle();
+                      if(user != null && mounted){
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => HomePage()
+                        ));
+                      }
+                    } on FirebaseAuthException catch (error) {
+                      print(error.message);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.message ?? "Somrthing went wrong")
+                      ));
+                    }
+                    catch (error) {
+                      print(error);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.toString())
+                      ));
+                    }
+                  },
                   child: Image.asset(
                     'assets/LogoGoogle.png',
                     height: 24,
