@@ -45,6 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GIDClientID</key>
+	<!-- TODO Replace this value: -->
+	<!-- Copied from GoogleService-Info.plist key CLIENT_ID -->
+	<string>1082039586801-erp6entfctaahvptlemsmalfr0u6ms0l.apps.googleusercontent.com</string>
 
 		<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
 	<!-- Google Sign-in Section -->
