@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1082039586801",
+    "project_id": "dreamsaver-project",
+    "storage_bucket": "dreamsaver-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082039586801:android:52146d260817e22c327e50",
+        "android_client_info": {
+          "package_name": "com.example.dreamsaver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDim8sebqGKzMD_97N4_X7v_3bwSbejA2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
