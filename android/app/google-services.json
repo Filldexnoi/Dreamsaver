@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1082039586801-oksqf5j03j446e3sn8l0gfmgrqo36r7a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dreamsaver",
+            "certificate_hash": "2277a4514ff862ceab3f9311e079be40a53f596a"
+          }
+        },
+        {
           "client_id": "1082039586801-jgpog63s6qdo51a5prnb5ap1dnb95jql.apps.googleusercontent.com",
           "client_type": 3
         }

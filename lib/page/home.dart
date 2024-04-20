@@ -2,7 +2,8 @@ import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addgoal.dart';
-import 'dart:core';
+import 'setting.dart';
+
 class HomePage extends StatefulWidget{
   @override
   State<HomePage> createState() => _HomePageState();
@@ -32,6 +33,9 @@ class _HomePageState extends State<HomePage> {
           child: IconButton(
             icon: Icon(Icons.settings_outlined,size: 35),
              onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingPage()),);
               
              }
             )
@@ -60,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'Arapey-Regular',
-                        fontSize: 18
+                        fontSize: 24
                           ),
                       ),
                 ),
