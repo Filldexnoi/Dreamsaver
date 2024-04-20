@@ -1,7 +1,6 @@
 import 'package:dreamsaver/usercontroller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/gestures.dart';
 import 'Signup.dart';
 import 'home.dart';
@@ -14,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  GoogleSignIn _googleSignIn = GoogleSignIn();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   
@@ -33,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => SignUpPage()),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

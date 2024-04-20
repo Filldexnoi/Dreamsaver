@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 class AddGoalPage extends StatefulWidget {
   const AddGoalPage({super.key});
 
@@ -11,12 +14,32 @@ class AddGoalPage extends StatefulWidget {
 }
 
 class _AddGoalPageState extends State<AddGoalPage> {
-  final TextEditingController _textFieldController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _moneytargetController = TextEditingController();
+  final TextEditingController _startController = TextEditingController();
+  final TextEditingController _finishController = TextEditingController();
+  final TextEditingController _moneyperdayController = TextEditingController();
   File? _image;
-  int? _moneytarget;
-  int? _moneyperday;
   DateTime? _startdate;
   DateTime? _finishdate;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<void> addgoal(String? useremail, String name, double? moneytarget,DateTime? start
+  ,DateTime? finish,double? moneyperday,String imgurl) async {
+    try {
+      firestore.collection('users').doc(useremail).collection('goallist').add({
+        'name': name,
+        'moneytarget': moneytarget,
+        'moneyp erday': moneyperday,
+        'startdate': start,
+        'finishdate': finish,
+        'image_url': imgurl,
+      });
+      print('Food data added successfully!');
+    } catch (e) {
+      print('Error adding food data: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,92 +61,171 @@ class _AddGoalPageState extends State<AddGoalPage> {
               ),
       ),
       backgroundColor : Color(0xFFF4EFF6),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [ 
-            GestureDetector(
-                onTap: () {
-                  _selectImage();
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFD9D9D9),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Stack(
-                    children: [
-                      if (_image != null) 
-                        Positioned.fill(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: Image.file(
-                                _image!,
-                                fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [ 
+              GestureDetector(
+                  onTap: () {
+                    _selectImage();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFD9D9D9),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Stack(
+                      children: [
+                        if (_image != null) 
+                          Positioned.fill(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: Image.file(
+                                  _image!,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
+                        Center(
+                          child: Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 100,
+                            color: Color(0xff53C9D0),
+                          ),
                         ),
-                      Center(
-                        child: Icon(
-                          Icons.add_photo_alternate_outlined,
-                          size: 100,
-                          color: Color(0xff53C9D0),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                ),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 20),
+                      hintText: 'Name',
+                      hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular',fontSize: 24),  
+                      ),
+                style: const TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+               ),
+              TextField(
+                controller: _moneytargetController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 20),
+                      hintText: 'Money Target',
+                      hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular',fontSize: 24),  
+                      ),
+                style: const TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
                 ),
               ),
-            TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(labelText: 'Enter String'),
-            ),
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  _moneytarget = int.tryParse(value);
-                });
-              },
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Enter Integer 1'),
-            ),
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  _moneyperday = int.tryParse(value);
-                });
-              },
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Enter Integer 2'),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _selectDate(true),
-                    child: Text('Select Date 1'),
+              TextField(
+                style: const TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+                controller: _startController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(top: 20),
+                  hintText: 'Start Date',
+                  hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular',fontSize: 24),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_drop_down,size: 40,),
+                    onPressed: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2015, 8),
+                        lastDate: DateTime(2101),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _startdate = pickedDate;
+                          _startController.text = DateFormat.yMd().format(pickedDate); 
+                        });
+                      }
+                    },
                   ),
                 ),
-                SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _selectDate(false),
-                    child: Text('Select Date 2'),
+                readOnly: true,
+              ),
+              TextField(
+                style: const TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+                controller: _finishController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(top: 20),
+                  hintText: 'Finish Date',
+                  hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular',fontSize: 24),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_drop_down,size: 40,),
+                    onPressed: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2015, 8),
+                        lastDate: DateTime(2101),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _finishdate = pickedDate;
+                          _finishController.text = DateFormat.yMd().format(pickedDate); 
+                        });
+                      }
+                    },
                   ),
                 ),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: _saveData,
-              child: Text('Save Data'),
-            ),
-          ],
+                readOnly: true,
+              ),
+              TextField(
+                controller: _moneyperdayController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 20),
+                      hintText: 'Min money save per day (optional)',
+                      hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular',fontSize: 24),  
+                      ),
+                style: const TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 120,vertical: 30),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFAE6ACE)),
+                    ),
+                  onPressed: _saveData,
+                  child: const Text('Save',
+                            style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Arapey-Regular',
+                            fontSize: 24
+                            ),
+                          ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -137,33 +239,12 @@ class _AddGoalPageState extends State<AddGoalPage> {
     });
   }
 
-  Future<void> _selectDate(bool isFirstDate) async {
-    final selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      setState(() {
-        if (isFirstDate) {
-          _startdate = selectedDate;
-        } else {
-          _finishdate = selectedDate;
-        }
-      });
-    }
-  }
-
   Future<void> _saveData() async {
-    if (_textFieldController.text.isEmpty ||
+    if (_nameController.text.isEmpty ||
         _image == null ||
-        _moneytarget == null ||
-        _moneyperday == null ||
+        _moneytargetController.text.isEmpty||
         _startdate == null ||
         _finishdate == null) {
-      // Validate input fields
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -183,20 +264,24 @@ class _AddGoalPageState extends State<AddGoalPage> {
       );
       return;
     }
-    final storageRef = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}');
+    final storageRef = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch.toString()}');
     final uploadTask = storageRef.putFile(_image!);
 
     final TaskSnapshot snapshot = await uploadTask;
     final imageUrl = await snapshot.ref.getDownloadURL();
+    double? moneypearday;
+    if(_moneyperdayController.text.isNotEmpty){
+      moneypearday = double.parse(_moneyperdayController.text);
+    }
     // Save data to Firestore
-    await FirebaseFirestore.instance.collection('your_collection').add({
-      'string_field': _textFieldController.text,
-      'moneytarget': _moneytarget,
-      'moneyperday': _moneyperday,
-      'startdate': _startdate,
-      'finishdate': _finishdate,
-      'image_url': imageUrl,
-    }).then((value) {
+    addgoal(UserController.user?.email,
+    _nameController.text,
+    double.parse(_moneytargetController.text),
+    _startdate,
+    _finishdate,
+    moneypearday,
+    imageUrl
+    ).then((value) {
       // Data saved successfully
       Navigator.of(context).pop();
     }).catchError((error) {

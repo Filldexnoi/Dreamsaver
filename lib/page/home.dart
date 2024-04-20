@@ -1,9 +1,8 @@
 import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 import 'addgoal.dart';
-
+import 'dart:core';
 class HomePage extends StatefulWidget{
   @override
   State<HomePage> createState() => _HomePageState();
@@ -11,13 +10,15 @@ class HomePage extends StatefulWidget{
 
 class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
-
+  String? photourl = UserController.user?.photoURL;
+  String? email = UserController.user?.email;
  void _navigateToAddgoal() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddGoalPage()),
     );
   }
+ 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -87,8 +88,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
               child: Center(
-                child: FutureBuilder(
-                  future: FirebaseFirestore.instance.collection('your_collection').get(),
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -108,27 +109,65 @@ class _HomePageState extends State<HomePage> {
                         return ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 3,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Data: ${data[index]['your_data_field']}'),
-                                ],
-                              ),
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Stack(
+                                  alignment: AlignmentDirectional.bottomEnd,
+                                  children: [
+                                    Container(
+                                        margin: EdgeInsets.fromLTRB(20, 5, 20, 10),
+                                        width: double.infinity,
+                                        height: 200,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(15),
+                                          child: Image.network(
+                                            data[index]['image_url'],
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    Container(
+                                      margin: EdgeInsets.fromLTRB(20, 5, 20, 10),
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(15),
+                                          color: Colors.white
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(data[index]['name'],
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontFamily: 'Arapey-Regular',
+                                                fontSize: 20,
+                                              ),)
+                                            ],
+                                          ),
+                                          //daysLeft(data[index]['startdate'], data[index]['finishdate']
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(data[index]['startdate'].toString(),
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontFamily: 'Arapey-Regular',
+                                                fontSize: 20,
+                                              ),)
+                                            ],
+                                          ),
+                                        ],),
+                                    )
+                                  ],
+                                )
+                              ],
                             );
                           },
                         );
