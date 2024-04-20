@@ -10,7 +10,7 @@ class SecurityPage extends StatefulWidget {
 
 class _SecurityPageState extends State<SecurityPage> {
   @override
-
+  
   void _navigateToChangepassword() {
     Navigator.push(
       context,

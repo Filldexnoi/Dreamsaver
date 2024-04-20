@@ -23,7 +23,7 @@ void _navigateToSecurity() {
         centerTitle: true,
         toolbarHeight: 75,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size:35),
+          icon: Icon(Icons.arrow_back_ios, size:25),
           onPressed: () {
             Navigator.pop(context);
           },
