@@ -1,6 +1,8 @@
 import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
+import 'addgoal.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -9,6 +11,13 @@ class HomePage extends StatefulWidget{
 
 class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
+
+ void _navigateToAddgoal() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddGoalPage()),
+    );
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +38,108 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       backgroundColor: Color(0xFFEFE0F6),
-      body: Container(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Container(
+                alignment: Alignment.center,
+                width: 125,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color(0xFFD3F1F8), 
+                  borderRadius: BorderRadius.circular(45), 
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                child: Text('My Goal',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Arapey-Regular',
+                        fontSize: 18
+                          ),
+                      ),
+                ),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    fixedSize: Size(125, 40),
+                    side: BorderSide(color: Colors.white, width: 1),
+                    backgroundColor: Color(0xFFD3F1F8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(45),
+                      ),
+                    ),
+                    onPressed: _navigateToAddgoal,
+                    child: Text('Add Goal+',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Arapey-Regular',
+                        fontSize: 18
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: FutureBuilder(
+                  future: FirebaseFirestore.instance.collection('your_collection').get(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      List<DocumentSnapshot<Map<String, dynamic>>>? data = snapshot.data?.docs;
+                      if (data == null || data.isEmpty) {
+                        return const Text('Now Don’t have goal',
+                                style: TextStyle(
+                                  color: Color(0xFFACACAC),
+                                  fontFamily: 'Arapey-Regular',
+                                  fontSize: 36
+                                ),
+                              );
+                      } else {
+                        return ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Data: ${data[index]['your_data_field']}'),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    }
+                  },
+                ),
+              ),
+            ),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         backgroundColor: Colors.white,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,

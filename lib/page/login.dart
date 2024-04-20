@@ -40,10 +40,11 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Color(0xFFECFBFF),
       body: Container(
+        alignment: Alignment.center,
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(0.0, 170.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(0.0, 20, 0.0, 0.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
