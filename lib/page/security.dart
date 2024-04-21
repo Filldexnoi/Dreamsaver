@@ -37,13 +37,13 @@ class _SecurityPageState extends State<SecurityPage> {
           ),
         ),
         backgroundColor: Color(0xFFEFE0F6),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: 350,
+                width: double.infinity,
                 height: 80,
                 child: ElevatedButton(
                   onPressed: _navigateToChangepassword,

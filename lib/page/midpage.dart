@@ -18,7 +18,7 @@ class _MiddlePageState extends State<MiddlePage> {
   final List<Widget>_bodypage =[
     const HomePage(),
     const CalendarPage(),
-    const ProfilePage(),
+    ProfilePage(),
   ];
   
   

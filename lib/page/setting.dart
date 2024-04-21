@@ -37,13 +37,13 @@ void _navigateToSecurity() {
           ),
         ),
        backgroundColor: Color(0xFFEFE0F6),
-       body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              width: 350,
+              width: double.infinity,
               height: 80,
               child: ElevatedButton(
                 onPressed: _navigateToSecurity,
@@ -69,41 +69,33 @@ void _navigateToSecurity() {
                       size: 24,
                     ),
                   ],
+                  
                 ),
               ),
             ),
-          )
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 40),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFAE6ACE)),
+                    ),
+              onPressed: () {
+                
+              },
+              child: Text('Log Out',
+              style: TextStyle(
+                fontFamily: 'Arapey-Regular',
+                fontSize: 24,
+                color: Colors.white
+                ),
+              ),
+              
+            ),
+          ),
         ],
       ),
-    );
-
-  //      body: Column(
-  //       children: [
-  //         Padding(
-  //           padding: const EdgeInsets.all(8.0),
-            
-  //           child: Container(
-  //             padding: EdgeInsets.all(8.0), // เพิ่มระยะห่างรอบข้อความ
-  //             decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.circular(15.0),
-  //           ),
-  //           child: Text(
-  //             'Security',
-  //             textAlign: TextAlign.center,
-  //             style: TextStyle(
-  //               color: Colors.black,
-  //               fontFamily: 'Arapey-Regular',
-  //               fontSize: 18
-  //               ),
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-       
-  //  );
-
+      );
 
   }
 

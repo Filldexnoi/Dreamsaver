@@ -45,6 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to pick an image for your profile.</string>
 	<key>GIDClientID</key>
 	<!-- TODO Replace this value: -->
 	<!-- Copied from GoogleService-Info.plist key CLIENT_ID -->
