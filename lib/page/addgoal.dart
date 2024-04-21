@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -24,22 +23,41 @@ class _AddGoalPageState extends State<AddGoalPage> {
   DateTime? _finishdate;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _moneytargetController.dispose();
+    _startController.dispose();
+    _finishController.dispose();
+    _moneyperdayController.dispose();
+    super.dispose();
+  }
+  
+  
   Future<void> addgoal(String? useremail, String name, double? moneytarget,DateTime? start
-  ,DateTime? finish,double? moneyperday,String imgurl) async {
+  ,DateTime? finish,num moneyperday,String imgurl) async {
     try {
-      firestore.collection('users').doc(useremail).collection('goallist').add({
+      DocumentReference docRef = await firestore.collection('users').doc(useremail).collection('goallist').add({
         'name': name,
         'moneytarget': moneytarget,
-        'moneyp erday': moneyperday,
+        'moneyperday': moneyperday,
         'startdate': start,
         'finishdate': finish,
         'image_url': imgurl,
+        'moneycurrent' : 0,
       });
-      print('Food data added successfully!');
+      for (DateTime? date = start; date!.isBefore(finish!.add(const Duration(days: 1))); date = date.add(Duration(days: 1))) {
+        await firestore.collection('users').doc(useremail).collection('goallist')
+        .doc(docRef.id).collection('dailydata').doc(date.toString()).set({
+            'checkstatus': false,
+        });
+      }
+      print('Data added successfully!');
     } catch (e) {
-      print('Error adding food data: $e');
+      print('Error adding data: $e');
     }
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,25 +282,47 @@ class _AddGoalPageState extends State<AddGoalPage> {
       );
       return;
     }
+    else if (double.parse(_moneytargetController.text).toInt()==0){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Money target less than 1'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
     final storageRef = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch.toString()}');
     final uploadTask = storageRef.putFile(_image!);
 
     final TaskSnapshot snapshot = await uploadTask;
     final imageUrl = await snapshot.ref.getDownloadURL();
-    double? moneypearday;
+    num moneyperday;
     if(_moneyperdayController.text.isNotEmpty){
-      moneypearday = double.parse(_moneyperdayController.text);
+      moneyperday = double.parse(_moneyperdayController.text);
+    }else{
+      int difference = _finishdate!.difference(_startdate!).inDays;
+      moneyperday = (double.parse(_moneytargetController.text)/difference).ceil();
     }
     // Save data to Firestore
     addgoal(UserController.user?.email,
     _nameController.text,
-    double.parse(_moneytargetController.text),
+    double.tryParse(_moneytargetController.text),
     _startdate,
     _finishdate,
-    moneypearday,
+    moneyperday,
     imageUrl
     ).then((value) {
-      // Data saved successfully
       Navigator.of(context).pop();
     }).catchError((error) {
       // Error saving data

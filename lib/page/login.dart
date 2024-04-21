@@ -12,17 +12,97 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   
-  @override
-  void _login() {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-
-    print('Username: $username');
-    print('Password: $password');
+  void _showErrorDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: Text('An error occurred'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+  void _showEmailFormatErrorDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: Text('The email address is badly formatted. Please enter a valid email address.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ปิดกล่องโต้ตอบ
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+  void _showEmailPasswordworingErrorDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: Text('Invalid email or password. Please try again.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ปิดกล่องโต้ตอบ
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+  Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please enter email and password.'),
+      ),
+    );
+    return;
   }
+  try {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+    print('User signed in: ${userCredential.user!.uid}');
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => MiddlePage()
+    ));
+  } on FirebaseAuthException catch (e) {
+    print('Error signing in: $e');
+    if (e.code == 'invalid-email') {
+        _showEmailFormatErrorDialog(context);
+    }
+    else if (e.code == 'invalid-credential') {
+      _showEmailPasswordworingErrorDialog(context);
+    } else{
+      _showErrorDialog(context);
+    }
+  }
+}
 
   void _navigateToSignUpPage() {
     Navigator.push(
@@ -65,9 +145,9 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
-                    controller: _usernameController,
+                    controller: _emailController,
                     decoration: InputDecoration(
-                      hintText: 'Username',
+                      hintText: 'Email',
                       hintStyle: TextStyle(color: Color(0xFFB9BDC2),fontFamily: 'Arapey-Regular'),
                       contentPadding: EdgeInsets.all(12.0),
                       border: InputBorder.none,

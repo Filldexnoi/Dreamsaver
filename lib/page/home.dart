@@ -2,7 +2,7 @@ import 'package:dreamsaver/usercontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addgoal.dart';
-
+import 'package:percent_indicator/percent_indicator.dart';
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
   @override
@@ -68,7 +68,8 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Center(
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').snapshots(),
+                  stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').
+                        orderBy("finishdate").snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -88,6 +89,13 @@ class _HomePageState extends State<HomePage> {
                         return ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
+                            DateTime datenow = DateTime.now();
+                            DateTime endDate =data[index]['finishdate'].toDate();
+                            Duration difference = endDate.difference(datenow);
+                            String daysLeft = (difference.inDays+1).toString();
+                            var moneycurrent = data[index]['moneycurrent'];
+                            var moneytarget = data[index]['moneytarget'];
+                            double persent = (moneycurrent/moneytarget)*100;
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -118,6 +126,7 @@ class _HomePageState extends State<HomePage> {
                                           color: Colors.white
                                       ),
                                       child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -130,16 +139,28 @@ class _HomePageState extends State<HomePage> {
                                               ),)
                                             ],
                                           ),
-                                          //daysLeft(data[index]['startdate'], data[index]['finishdate']
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(data[index]['startdate'].toString(),
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontFamily: 'Arapey-Regular',
-                                                fontSize: 20,
-                                              ),)
+                                              Container(
+                                                margin: EdgeInsets.only(left : 20),
+                                                child: Text(int.parse(daysLeft) <=1 ? daysLeft+' day left' : daysLeft+' days left',
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontFamily: 'Arapey-Regular',
+                                                  fontSize: 20,
+                                                ),),
+                                              ),
+                                              LinearPercentIndicator(
+                                                width: MediaQuery.of(context).size.width * 0.45,
+                                                lineHeight: 20.0,
+                                                percent: persent*10, 
+                                                backgroundColor: Color(0xffD3F1F8),
+                                                progressColor: Color(0xFFFF59F1),
+                                                animation: true,
+                                                center: Text(moneycurrent.toInt().toString()+'/'+moneytarget.toInt().toString()),
+                                                barRadius: Radius.circular(15), 
+                                              ),
                                             ],
                                           ),
                                         ],),

@@ -1,10 +1,10 @@
 import 'home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:dreamsaver/usercontroller.dart';
 import 'setting.dart';
 import 'calendar.dart';
 import 'profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 class MiddlePage extends StatefulWidget {
   const MiddlePage({super.key});
 
@@ -21,14 +21,41 @@ class _MiddlePageState extends State<MiddlePage> {
     const ProfilePage(),
   ];
   
+  
   Widget getTitle(int index) {
     switch (index) {
       case 0:
-        return Text(UserController.user?.displayName ?? '',style: const TextStyle(
+        return StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('users').doc(UserController.user?.email).snapshots(),
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+            String? name = userData['name'];
+            bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
+            if (check!=null) {
+              if(check){
+                return Text(UserController.user?.displayName ?? '',style: const TextStyle(
                   color: Colors.black,
                   fontFamily: 'Arapey-Regular',
                   fontSize: 24
-            ),);
+                ),);
+              } else {
+                  return Text(name!,style: const TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Arapey-Regular',
+                    fontSize: 24
+                ),);
+              }
+            }else{
+              return const Text('');
+            }
+          }
+        );
       case 1:
         return const Text('Calendar',style: TextStyle(
                   color: Colors.black,
@@ -55,9 +82,34 @@ class _MiddlePageState extends State<MiddlePage> {
       appBar:AppBar(
         toolbarHeight: 75,
         centerTitle: currentPageIndex == 0 ? false : true,
-        leading: currentPageIndex == 0 ? Container(
-          margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-          child: CircleAvatar(foregroundImage: NetworkImage(UserController.user?.photoURL ?? ''),)): null,
+        leading: currentPageIndex == 0 ? StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('users').doc(UserController.user?.email).snapshots(),
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+            String? profileImageUrl = userData['profilepic'];
+
+            if (profileImageUrl != null && profileImageUrl.isNotEmpty){
+              return Container(
+                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(profileImageUrl),
+                ),
+              );
+            } else{
+              return Container(
+                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                child: Icon(Icons.account_circle,size: 50,)
+                );
+            }
+          },
+          
+        ) : null,
         title: getTitle(currentPageIndex),
         actions: currentPageIndex == 0
             ?[Container(
