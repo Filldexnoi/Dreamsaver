@@ -29,13 +29,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Stack(
-        alignment: AlignmentDirectional.bottomEnd,
-        children: [Column(
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 50),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1),
+          child: Container(
             width: double.infinity,
             height: 150,
             decoration: BoxDecoration(
@@ -55,107 +55,107 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             )
           ),
-          StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
-          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            }
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-            if (snapshot.data == null){
-              return Container();
-            }
-            Map<String?, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
-            String? name = userData['name'];
-            bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
-            if (check!=null) {
-              if(check){
+        ),
+        StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.data == null){
+            return Container();
+          }
+          Map<String?, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+          String? name = userData['name'];
+          bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
+          if (check!=null) {
+            if(check){
+              return Padding(
+                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                child: Text(UserController.user?.displayName ?? '',style: const TextStyle(
+                  color:  Color(0xff50555C),
+                  fontFamily: 'Arapey-Regular',
+                  fontSize: 24,
+                ),),
+              );
+            } else {
                 return Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(UserController.user?.displayName ?? '',style: const TextStyle(
+                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                  child: Text(name!,style: const TextStyle(
                     color:  Color(0xff50555C),
                     fontFamily: 'Arapey-Regular',
-                    fontSize: 24,
+                    fontSize: 24
                   ),),
                 );
-              } else {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text(name!,style: const TextStyle(
-                      color:  Color(0xff50555C),
-                      fontFamily: 'Arapey-Regular',
-                      fontSize: 24
-                    ),),
-                  );
-              }
-            }else{
-              return const Text('');
             }
+          }else{
+            return const Text('');
           }
-        ),
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Text(
-              user!.email!,
-              style: TextStyle(
-                fontSize: 24,
-                color: Color(0xff50555C),
-                fontFamily: 'Arapey-Regular',
-              ),
+        }
+      ),
+        Padding(
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+          child: Text(
+            user!.email!,
+            style: TextStyle(
+              fontSize: 24,
+              color: Color(0xff50555C),
+              fontFamily: 'Arapey-Regular',
             ),
           ),
+        ),
+        ],
+      ),
+      Container(
+        height: MediaQuery.of(context).size.height * 0.3,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
+          color: Colors.white
+        ),
+        child: Column(
+          children: [
+            TextField(
+              readOnly: true,
+                decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      hintText: 'Picture and Username',
+                      hintStyle: TextStyle(color: Colors.black,fontFamily: 'Arapey-Regular',fontSize: 24),
+                      suffixIcon: IconButton(
+                      icon: Icon(Icons.arrow_forward_ios_rounded,size: 24,),
+                      onPressed : _navigateToEdit
+                    ),
+                ),
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+              ),
+            TextField(
+              readOnly: true,
+                decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      hintText: 'Salary',
+                      hintStyle: TextStyle(color: Colors.black,fontFamily: 'Arapey-Regular',fontSize: 24),
+                      suffixIcon: IconButton(
+                      icon: Icon(Icons.arrow_forward_ios_rounded,size: 24,),
+                      onPressed : _navigateToSalary,
+                      
+                    ),
+                ),
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontFamily: 'Arapey-Regular',
+                  color: Colors.black, 
+                ),
+              ),
           ],
         ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
-            color: Colors.white
-          ),
-          child: Column(
-            children: [
-              TextField(
-                readOnly: true,
-                  decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
-                        hintText: 'Picture and Username',
-                        hintStyle: TextStyle(color: Colors.black,fontFamily: 'Arapey-Regular',fontSize: 24),
-                        suffixIcon: IconButton(
-                        icon: Icon(Icons.arrow_forward_ios_rounded,size: 24,),
-                        onPressed : _navigateToEdit
-                      ),
-                  ),
-                  style: TextStyle(
-                    fontSize: 24, 
-                    fontFamily: 'Arapey-Regular',
-                    color: Colors.black, 
-                  ),
-                ),
-              TextField(
-                readOnly: true,
-                  decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
-                        hintText: 'Salary',
-                        hintStyle: TextStyle(color: Colors.black,fontFamily: 'Arapey-Regular',fontSize: 24),
-                        suffixIcon: IconButton(
-                        icon: Icon(Icons.arrow_forward_ios_rounded,size: 24,),
-                        onPressed : _navigateToSalary,
-                        
-                      ),
-                  ),
-                  style: TextStyle(
-                    fontSize: 24, 
-                    fontFamily: 'Arapey-Regular',
-                    color: Colors.black, 
-                  ),
-                ),
-            ],
-          ),
-        )
-        ]
-      ),
+      )
+      ]
     );
   }
 }
