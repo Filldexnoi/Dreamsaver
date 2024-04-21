@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addgoal.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
   @override
@@ -10,7 +11,8 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePageState extends State<HomePage> {
-  String? email = UserController.user?.email;
+  
+  final user = FirebaseAuth.instance.currentUser;
   void _navigateToAddgoal() {
     Navigator.push(
       context,
@@ -68,7 +70,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Center(
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').
+                  stream: FirebaseFirestore.instance.collection('users').doc(user?.email).collection('goallist').
                         orderBy("finishdate").snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

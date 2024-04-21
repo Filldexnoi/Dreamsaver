@@ -1,22 +1,36 @@
-import 'package:dreamsaver/page/home.dart';
-import 'package:dreamsaver/page/security.dart';
-import 'package:flutter/material.dart';
 
+import 'package:dreamsaver/page/security.dart';
+import 'package:dreamsaver/usercontroller.dart';
+import 'package:flutter/material.dart';
+import 'login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
 
   @override
-  State<SettingPage> createState() => _Setting_pageState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
-class _Setting_pageState extends State<SettingPage> {
-  @override
-void _navigateToSecurity() {
-    Navigator.push(
+class _SettingPageState extends State<SettingPage> {
+  void _navigateToSecurity() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SecurityPage()),
+      );
+    }
+  void signout() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
+    if(mounted){
+    Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => SecurityPage()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false, 
     );
+    }
   }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppBar(
@@ -80,23 +94,18 @@ void _navigateToSecurity() {
                   style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFAE6ACE)),
                     ),
-              onPressed: () {
-                
-              },
+              onPressed: signout,
               child: Text('Log Out',
               style: TextStyle(
                 fontFamily: 'Arapey-Regular',
                 fontSize: 24,
                 color: Colors.white
                 ),
-              ),
-              
+              ),             
             ),
           ),
         ],
       ),
-      );
-
+    );
   }
-
-}
+ }

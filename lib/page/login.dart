@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // ปิดกล่องโต้ตอบ
+              Navigator.of(context).pop(); 
             },
             child: Text('OK'),
           ),

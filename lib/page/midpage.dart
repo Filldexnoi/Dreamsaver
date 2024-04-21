@@ -5,6 +5,8 @@ import 'setting.dart';
 import 'calendar.dart';
 import 'profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 class MiddlePage extends StatefulWidget {
   const MiddlePage({super.key});
 
@@ -14,7 +16,7 @@ class MiddlePage extends StatefulWidget {
 
 class _MiddlePageState extends State<MiddlePage> {
   int currentPageIndex = 0;
-  
+  final user = FirebaseAuth.instance.currentUser;
   final List<Widget>_bodypage =[
     const HomePage(),
     const CalendarPage(),
@@ -26,7 +28,7 @@ class _MiddlePageState extends State<MiddlePage> {
     switch (index) {
       case 0:
         return StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('users').doc(UserController.user?.email).snapshots(),
+          stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -34,7 +36,10 @@ class _MiddlePageState extends State<MiddlePage> {
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
-            Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+            if (snapshot.data == null){
+              return Container();
+            }
+            Map<String?, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
             String? name = userData['name'];
             bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
             if (check!=null) {
@@ -83,7 +88,7 @@ class _MiddlePageState extends State<MiddlePage> {
         toolbarHeight: 75,
         centerTitle: currentPageIndex == 0 ? false : true,
         leading: currentPageIndex == 0 ? StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('users').doc(UserController.user?.email).snapshots(),
+          stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();

@@ -22,7 +22,7 @@ class _AddGoalPageState extends State<AddGoalPage> {
   DateTime? _startdate;
   DateTime? _finishdate;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+  bool _isLoading = false;
   @override
   void dispose() {
     _nameController.dispose();
@@ -37,7 +37,7 @@ class _AddGoalPageState extends State<AddGoalPage> {
   Future<void> addgoal(String? useremail, String name, double? moneytarget,DateTime? start
   ,DateTime? finish,num moneyperday,String imgurl) async {
     try {
-      DocumentReference docRef = await firestore.collection('users').doc(useremail).collection('goallist').add({
+      await firestore.collection('users').doc(useremail).collection('goallist').add({
         'name': name,
         'moneytarget': moneytarget,
         'moneyperday': moneyperday,
@@ -45,13 +45,11 @@ class _AddGoalPageState extends State<AddGoalPage> {
         'finishdate': finish,
         'image_url': imgurl,
         'moneycurrent' : 0,
+        'statuscheck' : false,
       });
-      for (DateTime? date = start; date!.isBefore(finish!.add(const Duration(days: 1))); date = date.add(Duration(days: 1))) {
-        await firestore.collection('users').doc(useremail).collection('goallist')
-        .doc(docRef.id).collection('dailydata').doc(date.toString()).set({
-            'checkstatus': false,
-        });
-      }
+      setState(() {
+        _isLoading = false;
+      });
       print('Data added successfully!');
     } catch (e) {
       print('Error adding data: $e');
@@ -232,8 +230,10 @@ class _AddGoalPageState extends State<AddGoalPage> {
                   style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFAE6ACE)),
                     ),
-                  onPressed: _saveData,
-                  child: const Text('Save',
+                  onPressed: _isLoading ? null : _saveData,
+                  child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          :const Text('Save',
                             style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'Arapey-Regular',
@@ -315,6 +315,9 @@ class _AddGoalPageState extends State<AddGoalPage> {
       moneyperday = (double.parse(_moneytargetController.text)/difference).ceil();
     }
     // Save data to Firestore
+    setState(() {
+      _isLoading = true; 
+    });
     addgoal(UserController.user?.email,
     _nameController.text,
     double.tryParse(_moneytargetController.text),
@@ -323,6 +326,9 @@ class _AddGoalPageState extends State<AddGoalPage> {
     moneyperday,
     imageUrl
     ).then((value) {
+      setState(() {
+      _isLoading = false; 
+    });
       Navigator.of(context).pop();
     }).catchError((error) {
       // Error saving data

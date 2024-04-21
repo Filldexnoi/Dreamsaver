@@ -35,8 +35,8 @@ class UserController{
     print("Save User success");
   }
 
-  Future<void> signOut() async{
-    await FirebaseAuth.instance.signOut();
+  static Future<void> signOut() async{
     await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
   }
 }
