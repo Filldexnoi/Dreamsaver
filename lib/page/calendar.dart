@@ -22,29 +22,25 @@ class _CalendarPageState extends State<CalendarPage> {
     _loadDataForSelectedDay(selectedDay);
   }
   void _loadDataForSelectedDay(DateTime selectedDayy){
-    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDayy);
-    FirebaseFirestore.instance
-      .collection('users')
-      .doc(email)
-      .collection('goallist')
-      .doc(formattedDate)
-      .get().then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      if (snapshot.exists) {
-        
-      } else {
-        
-      }
-    }).catchError((error) {
-      
-    });
-  }
-  void _savedata(){
 
+  }
+  Future<void> _savedata(num moneycurrent) async {
+     try {
+      await firestore.collection('users').doc(email).collection('goallist').doc(docid2).update({
+      'moneycurrent': FieldValue.increment(moneycurrent),
+      });
+      print('Field incremented successfully');
+    } catch (error) {
+      print('Error incrementing field: $error');
+    }
   }
   void _dontsavedata(){
 
   }
-  
+  bool isSaved = false;
+  bool isSaved2 = false;
+  num moneyperday2 = 0;
+  String docid2 = '';
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -66,7 +62,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
           ),
           Expanded(
-              child: Center(
+              child: isSaved ?Container() :Center(
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').
                         orderBy("name").snapshots(),
@@ -91,7 +87,9 @@ class _CalendarPageState extends State<CalendarPage> {
                           itemBuilder: (context, index) {
                             String name = data[index]['name'];
                             num moneyperday = data[index]['moneyperday'];
+                            moneyperday2 = moneyperday;
                             String docid = data[index].id;
+                            docid2 = docid;
                             return Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -142,47 +140,79 @@ class _CalendarPageState extends State<CalendarPage> {
                           }
                         )
                       )
-                      ),Padding(
+                      ),
+            Padding(
               padding: const EdgeInsets.only(top:11),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFAE6ACE)),
-                      minimumSize: MaterialStatePropertyAll(Size(145,40)),
-                    ),
-                    onPressed: _savedata,
-                    child: Text('Save',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Arapey-Regular',
-                        fontSize: 24
-                      ),
+              child: !isSaved ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFAE6ACE)),
+                    minimumSize: MaterialStateProperty.all<Size>(Size(145,40)),
+                  ),
+                  onPressed: () {
+                    _savedata(moneyperday2);
+                    setState(() {
+                      isSaved2 = true;
+                      isSaved = true;
+                    });
+                  },
+                  child: Text('Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Arapey-Regular',
+                      fontSize: 24
                     ),
                   ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFBDBDBD)),
-                      minimumSize: MaterialStatePropertyAll(Size(140,40)),
-                    ),
-                    onPressed: _dontsavedata,
-                    child: Text('Don’t Save',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Arapey-Regular',
-                        fontSize: 24
-                      ),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFBDBDBD)),
+                    minimumSize: MaterialStateProperty.all<Size>(Size(140,40)),
+                  ),
+                  onPressed: () {
+                    _dontsavedata();
+                    setState(() {
+                      isSaved = true;
+                    });
+                  },
+                  child: Text('Don’t Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Arapey-Regular',
+                      fontSize: 24
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ) : (isSaved2 ? Padding(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: Text('Successful!',
+                  style: TextStyle(
+                    color: Color(0xFFACACAC),
+                    fontFamily: 'Arapey-Regular',
+                    fontSize: 36
+                  ),
+                ),
+            ): Padding(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: Text('Today don’t save money',
+                style: TextStyle(
+                  color: Color(0xFFACACAC),
+                  fontFamily: 'Arapey-Regular',
+                  fontSize: 36
+                ),),
+              )
             )
-          ] 
           )
-        );
-      }
-}                      
+        ] 
+      )
+    );
+  }
+}
+
+                  
                   
                 
               

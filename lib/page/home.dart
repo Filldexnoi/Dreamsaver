@@ -97,7 +97,10 @@ class _HomePageState extends State<HomePage> {
                             String daysLeft = (difference.inDays+1).toString();
                             var moneycurrent = data[index]['moneycurrent'];
                             var moneytarget = data[index]['moneytarget'];
+                            print(moneycurrent);
+                            print(moneytarget);
                             double persent = (moneycurrent/moneytarget)*100;
+                            print(persent);
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -156,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                                               LinearPercentIndicator(
                                                 width: MediaQuery.of(context).size.width * 0.45,
                                                 lineHeight: 20.0,
-                                                percent: persent*10, 
+                                                percent: persent/100, 
                                                 backgroundColor: Color(0xffD3F1F8),
                                                 progressColor: Color(0xFFFF59F1),
                                                 animation: true,
