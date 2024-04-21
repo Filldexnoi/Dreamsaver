@@ -44,6 +44,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void _dontsavedata(){
 
   }
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -91,26 +92,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             String name = data[index]['name'];
                             num moneyperday = data[index]['moneyperday'];
                             String docid = data[index].id;
-                            return StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('users').doc(email).collection('goallist').
-                              doc(docid).collection('dailydata').snapshots(),
-                              builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot1) {
-                                if (snapshot1.connectionState == ConnectionState.waiting) {
-                                  return Center(child: CircularProgressIndicator());
-                                } else if (snapshot1.hasError) {
-                                  return Center(child: Text('Error: ${snapshot1.error}'));
-                                } else {
-                                  List<DocumentSnapshot<Map<String, dynamic>>>? data1 = snapshot.data?.docs;
-                                  if (data1 == null || data1.isEmpty) {
-                                    return const Text('Today don’t save money',
-                                            style: TextStyle(
-                                              color: Color(0xFFACACAC),
-                                              fontFamily: 'Arapey-Regular',
-                                              fontSize: 36
-                                            ),
-                                          );
-                                  } else {
-                                    return Column(
+                            return Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
@@ -150,22 +132,17 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 // ),
                                               ],
                                             )
-                                          ),
+                                        ),
                                       ],
                                     );
-                              }
-                                }
+                                  }
+                                );
                               } 
-                            );
-                          },
-                        );
-                      }
-                    }
-                  },
-                ),
-              ),
-            ),
-            Padding(
+                            }
+                          }
+                        )
+                      )
+                      ),Padding(
               padding: const EdgeInsets.only(top:11),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -201,8 +178,13 @@ class _CalendarPageState extends State<CalendarPage> {
                 ],
               ),
             )
-        ],
-      ),
-    );
-  }
-}
+          ] 
+          )
+        );
+      }
+}                      
+                  
+                
+              
+            
+  

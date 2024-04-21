@@ -31,11 +31,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: [Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1),
-          child: Container(
+      children: [Padding(
+        padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.06),
+        child: Column(
+        children: [
+          Container(
             width: double.infinity,
             height: 150,
             decoration: BoxDecoration(
@@ -55,59 +55,59 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             )
           ),
-        ),
-        StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
-        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          if (snapshot.data == null){
-            return Container();
-          }
-          Map<String?, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
-          String? name = userData['name'];
-          bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
-          if (check!=null) {
-            if(check){
-              return Padding(
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                child: Text(UserController.user?.displayName ?? '',style: const TextStyle(
-                  color:  Color(0xff50555C),
-                  fontFamily: 'Arapey-Regular',
-                  fontSize: 24,
-                ),),
-              );
-            } else {
+          StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('users').doc(user?.email).snapshots(),
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            if (snapshot.data == null){
+              return Container();
+            }
+            Map<String?, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+            String? name = userData['name'];
+            bool? check = UserController.user?.providerData.any((userInfo) => userInfo.providerId == 'google.com');
+            if (check!=null) {
+              if(check){
                 return Padding(
-                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                  child: Text(name!,style: const TextStyle(
+                  padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
+                  child: Text(UserController.user?.displayName ?? '',style: const TextStyle(
                     color:  Color(0xff50555C),
                     fontFamily: 'Arapey-Regular',
-                    fontSize: 24
+                    fontSize: 24,
                   ),),
                 );
+              } else {
+                  return Padding(
+                    padding: EdgeInsets.all(MediaQuery.of(context).size.height *0.01),
+                    child: Text(name!,style: const TextStyle(
+                      color:  Color(0xff50555C),
+                      fontFamily: 'Arapey-Regular',
+                      fontSize: 24
+                    ),),
+                  );
+              }
+            }else{
+              return const Text('');
             }
-          }else{
-            return const Text('');
           }
-        }
-      ),
-        Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-          child: Text(
-            user!.email!,
-            style: TextStyle(
-              fontSize: 24,
-              color: Color(0xff50555C),
-              fontFamily: 'Arapey-Regular',
+        ),
+          Padding(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
+            child: Text(
+              user!.email!,
+              style: TextStyle(
+                fontSize: 24,
+                color: Color(0xff50555C),
+                fontFamily: 'Arapey-Regular',
+              ),
             ),
           ),
+          ],
         ),
-        ],
       ),
       Container(
         height: MediaQuery.of(context).size.height * 0.3,
